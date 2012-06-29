@@ -1,0 +1,3 @@
+/**
+ * extensio for Firefox
+ */
