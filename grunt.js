@@ -27,6 +27,16 @@ module.exports = function(grunt) {
           '<file_strip_banner:src/safari.js>'
         ],
         dest: '<%= pkg.name %>.js'
+      },
+      release: {
+        src: [
+          '<banner:meta.banner>',
+          '<file_strip_banner:src/<%= pkg.name %>.js>',
+          '<file_strip_banner:src/chrome.js>',
+          '<file_strip_banner:src/firefox.js>',
+          '<file_strip_banner:src/safari.js>'
+        ],
+        dest: 'release/<%= pkg.name %>-<%= pkg.version %>.js'
       }
     },
     min: {
@@ -36,6 +46,13 @@ module.exports = function(grunt) {
           '<config:concat.dist.dest>'
         ],
         dest: '<%= pkg.name %>.min.js'
+      },
+      release: {
+        src: [
+          '<banner:meta.banner>',
+          '<config:concat.dist.dest>'
+        ],
+        dest: 'release/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     },
     watch: {
