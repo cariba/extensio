@@ -21,10 +21,10 @@ module.exports = function(grunt) {
       dist: {
         src: [
           '<banner:meta.banner>',
-          'src/chrome.js>',
-          'src/firefox.js>',
-          'src/safari.js>',
-          '<file_strip_banner:src/<%= pkg.name %>.js>'
+          '<file_strip_banner:src/<%= pkg.name %>.js>',
+          '<file_strip_banner:src/chrome.js>',
+          '<file_strip_banner:src/firefox.js>',
+          '<file_strip_banner:src/safari.js>'
         ],
         dest: '<%= pkg.name %>.js'
       }
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: '<config:lint.files>',
+      files: ['<config:lint.files>', 'test/*.js', 'test/*.html'],
       tasks: 'lint concat min qunit'
     },
     jshint: {
@@ -58,7 +58,10 @@ module.exports = function(grunt) {
       },
       globals: {
         console: true,
-        jQuery: true
+        jQuery: true,
+        chrome: true,
+        safari: true,
+        self: true
       }
     },
     uglify: {}
