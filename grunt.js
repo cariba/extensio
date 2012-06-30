@@ -11,16 +11,19 @@ module.exports = function(grunt) {
         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' MIT License */'
     },
-    dirs: {
-      libs: 'libs'
-    },
     lint: {
       files: ['grunt.js', 'src/*.js']
+    },
+    qunit: {
+      all: ['test/*.html']
     },
     concat: {
       dist: {
         src: [
           '<banner:meta.banner>',
+          'src/chrome.js>',
+          'src/firefox.js>',
+          'src/safari.js>',
           '<file_strip_banner:src/<%= pkg.name %>.js>'
         ],
         dest: '<%= pkg.name %>.js'
@@ -37,7 +40,7 @@ module.exports = function(grunt) {
     },
     watch: {
       files: '<config:lint.files>',
-      tasks: 'lint qunit'
+      tasks: 'lint concat min qunit'
     },
     jshint: {
       options: {
@@ -54,13 +57,14 @@ module.exports = function(grunt) {
         browser: true
       },
       globals: {
-        console: true
+        console: true,
+        jQuery: true
       }
     },
     uglify: {}
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint concat min');
+  grunt.registerTask('default', 'lint concat min qunit');
 
 };
