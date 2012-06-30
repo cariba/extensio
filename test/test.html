@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Extensio</title>
+<!-- Load local jQuery, removing access to $ (use jQuery, not $). -->
+<script src="../libs/jquery-1.7.2.js"></script>
+<script>jQuery.noConflict()</script>
+<!-- Load local QUnit (grunt requires v1.0.0 or newer). -->
+<link rel="stylesheet" href="../libs/qunit/qunit.css" media="screen">
+<script src="../libs/qunit/qunit.js"></script>
+<script>
+
+  // Some mock objects
+  var chrome = {};
+
+</script>
+<!-- Load local lib and tests. -->
+<script src="../extensio.js"></script>
+<script src="extensio-test.js"></script>
+
+<a class="test-link" href="#"></a>
+
+<div class="test-elem"><a href="#">Hello</a><strong>I am strong!</strong>Testing</div>
