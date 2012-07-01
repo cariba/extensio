@@ -1,4 +1,4 @@
-/*! extensio - v0.0.2 - 2012-06-30
+/*! extensio - v0.0.2 - 2012-07-01
 * Copyright (c) 2012 Tom Ashworth; MIT License */
 
 var xio;
@@ -15,7 +15,7 @@ window.xio = xio = (function ( $ ) {
    * Information & constants
    */
   var global = {
-    identifier: 'xio',
+    id: 'xio',
     env: {
       chrome: 1,
       firefox: 2,
@@ -41,6 +41,10 @@ window.xio = xio = (function ( $ ) {
       });
     }
   };
+
+  /**=============================================================
+   Utility
+   =============================================================**/
 
   /**
    * Nicer error handling
@@ -69,13 +73,17 @@ window.xio = xio = (function ( $ ) {
     if( typeof ob === 'string' ) { ob = {err: [ob], fatal: false}; }
     if( ! $.isArray( ob.err ) ) { ob.err = [ob.err]; }
     // Build the error array
-    var error = [ global.identifier, ':' ].concat( ob.err );
+    var error = [ global.id, ':' ].concat( ob.err );
     // Throw an exception on fatal errors,
     // otherwise log the error and return it
     if( ob.fatal ) { throw error.join( ' ' ); }
     else if ( this.logging ) { console.log.apply( console, error ); }
     return error.join( ' ' );
   };
+
+  /**=============================================================
+   DOM & CSS Methods
+   =============================================================**/
 
   /**
    * Quickly build DOM elements without using strings.
@@ -220,7 +228,7 @@ window.xio = xio = (function ( $ ) {
 
         // Iterate through each rule, adding to the rule
         for( attribute in ob[selector] ) {
-          if( ob[selector].hasOwnProperty(attribute) ) {
+          if( ob[selector].hasOwnProperty( attribute ) ) {
 
             // Ensure attribute is a string
             // (again, it should be)
@@ -260,10 +268,75 @@ window.xio = xio = (function ( $ ) {
     });
 
     // Add the style element to the DOM's <head>
-    $('head').append(elem);
+    $('head').append( elem );
 
     // Return a reference to the <style> element
     return elem[0];
+
+  };
+
+  /**=============================================================
+   DOM Insertion & 3rd-party UI Hacking
+   =============================================================**/
+
+  /**
+   * Helper for adding DOM to a page inside a specified container.
+   * Useful for hacking on other people's UI!
+   *
+   * ob syntax:
+   *   {
+   *     id: 'some identifier', // To help you in the case of errors (optional)
+   *     container: '.some-element', // CSS selector for the container of your new elements (default: 'body')
+   *     build: ... // xio.build(...) is used on this data and then inserted
+   *   }
+   *
+   * Example usage:
+   *   xio.insert({
+   *     id: 'my super link!',
+   *     container: '.their-container',
+   *     build:
+   *       ['div', { 'class': 'my-link' },
+   *         ['img', { src: '//lorempixum.com/g/10/10' }],
+   *         ['a', { href: '#' }]
+   *       ]
+   *   });
+   *
+   * Returns the inserted elements.
+   */
+  Xio.prototype.insert = function ( ob ) {
+
+    // Ensure that ob is an object
+    if( typeof ob !== 'object' ) {
+      return this.error({
+        err: 'ob must be an object for DOM insertion.'
+      });
+    }
+
+    // Build the elements to be inserted
+    
+    // Ensure that container is a string
+    if( typeof ob.container !== 'string' ) {
+      this.error({
+        err: 'It is best to specify a container when using xio.insert.'
+      });
+      // Assume body
+      ob.container = 'body';
+    }
+
+    // Ensure that ob is an array
+    if( ! $.isArray(ob.build) ) {
+      return this.error({
+        err: 'ob.build must be valid input for xio.build.'
+      });
+    }
+
+    // Run xio.build on it
+    var elem = this.build( ob.build );
+
+    // Add it to any container elements
+    $(ob.container).append( elem );
+
+    return elem;
 
   };
 

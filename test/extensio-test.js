@@ -21,6 +21,10 @@
       notStrictEqual(actual, expected, [message])
       raises(block, [expected], [message])
   */
+ 
+  /**
+   * Basic extensio functionality
+   */
 
   module('extensio#basic');
 
@@ -52,15 +56,19 @@
     }
   });
 
+  /**
+   * DOM Manipulation & CSS
+   */
+
   module('extensio#dom');
 
   test('xio.build', function () {
     var elem = $('.test-elem')[0];
     var domarray =
       ['div', { 'class': 'test-elem' },
-          ['a', { href: '#', text: 'Hello' }],
-          ['strong', { text: 'I am strong!' }],
-          'Testing'
+        ['a', { href: '#', text: 'Hello' }],
+        ['strong', { text: 'I am strong!' }],
+        'Testing'
       ];
     var newElem = xio.build(domarray);
     equal($(newElem).text(), $(elem).text(), 'correctly builds DOM elements');
@@ -80,6 +88,43 @@
     equal($('.test-link').css('color'), 'rgb(0, 255, 0)', 'correctly styles using keys');
     equal($('a', elem).css('color'), 'rgb(255, 0, 0)', 'correctly styles using string selectors');
     equal($('a', elem).css('background-color'), 'rgb(0, 0, 0)', 'correctly handles multiple rules');
+  });
+
+  /**
+   * Front-end extension
+   */
+  
+  module('extensio#front-end');
+
+  test('xio.insert', function () {
+    equal(typeof xio.insert, 'function', 'is a function');
+
+    var domarray =
+      ['div', { 'class': 'inserted-wrapper' },
+        ['i', { 'class': 'inserted-i' }],
+        ['a', { 'class': 'inserted-a', 'href': '#', text: 'Hello!' }]
+      ];
+    var style = {
+      '.inserted-wrapper': {
+        'background-color': 'red'
+      }
+    };
+
+    xio.css(style);
+
+    var inserted = xio.insert({
+      id: 'test',
+      container: '.test-container',
+      build: domarray
+    });
+
+    var test = $('.inserted-wrapper');
+
+    equal(inserted !== undefined, true, 'returns something');
+    equal(test.length > 0, true, 'inserts elements');
+    equal($('a', test).hasClass('inserted-a'), true, 'inserts children');
+    equal($('a', test).text(), 'Hello!', 'inserts text');
+
   });
 
 }( jQuery ));
