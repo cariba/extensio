@@ -1,6 +1,7 @@
 /**
  * extensio
  *
+ *
  * TODO:
  *   Find a way to only run Ch/FF/Sa code when we are in that evironment, and make the api
  *   accessible from an xio api
@@ -36,17 +37,68 @@ window.xio = xio = (function ( $ ) {
   var Xio = function () {
     // Directly log errors?
     this.logging = true;
-    // Detect the current environment
+
+    // Check for the prescence of Chrome, Firefox and Safari code
+    // Note to self: window.xio_ could be used for mocking API?
+    var env;
+    for( env in global.env ) {
+      if( global.env.hasOwnProperty(env) ) {
+        if( window['xio_' + env] === undefined ) {
+          this.error({
+            err: ["Could not find ", 'xio_' + env, " in the current environment."],
+            fatal: true
+          });
+        }
+      }
+    }
+
+    // Detect the current environment & extend Xio using the
+    // appropriate environment code
     this.env = 0;
-    if( chrome ) { this.env = global.env.chrome; }
-    else if( safari ) { this.env = global.env.safari; }
-    else if( self && self.extension ) { this.env = global.env.firefox; }
-    else {
-      this.error({
-        err: "Environment not known.",
-        fatal: true
+    this.env_name = '';
+    if( window.chrome ) {
+      this.env = global.env.chrome;
+      this.env_name = 'chrome';
+    }
+    else if( window.safari ) {
+      this.env = global.env.safari;
+      this.env_name = 'safari';
+    }
+    else if( window.self && window.self.extension ) {
+      this.env = global.env.firefox;
+      this.env_name = 'firefox';
+    } else {
+      // Only throw a fatal error if we're in an extension
+      if( window.xio_development !== true ) {
+        this.error({
+          err: "Environment not known.",
+          fatal: true
+        });
+      }
+    }
+  };
+
+  /**
+   * _api is in internal method that extends Xio by running the environment
+   * code that will have been attached to the window object.
+   *
+   * It will not run if window.xio_development is true.
+   */
+  Xio.prototype._api = function () {
+
+    if( window.xio_development === true ) {
+      return;
+    }
+    // Don't run twice
+    if( this._api_run === true ) {
+      return this.error({
+        err: "xio._api should not be run twice"
       });
     }
+    this._api_run = true;
+    // Run the correct property of window, in the context of Xio. (ie, 'this' will be Xio)
+    window['xio_' + this.env_name].apply( this, [Xio] );
+
   };
 
   /**=============================================================
@@ -362,6 +414,12 @@ window.xio = xio = (function ( $ ) {
   /**
    * Kick things off!
    */
-  return new Xio();
+  var xio = new Xio();
+  /**
+   * Extend the api
+   */
+  xio._api();
+
+  return xio;
 
 }( jQuery ));

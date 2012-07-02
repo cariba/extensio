@@ -39,7 +39,7 @@
   });
 
   test('environment', function () {
-    equal(xio.env, 1, 'xio.env is 1 (chrome detected)');
+    equal(xio.env, 0, 'xio.env is 0 (no environment detected)');
   });
 
   test('xio.error', function () {
@@ -54,6 +54,10 @@
     } catch (e) {
       equal(e, 'xio : Some fatal error', 'returns fatal errors correctly');
     }
+  });
+
+  test('xio._api', function () {
+    ok(xio._api, 'is true');
   });
 
   /**
