@@ -99,18 +99,13 @@
   test('xio.insert', function () {
     equal(typeof xio.insert, 'function', 'is a function');
 
+    var count = 0;
+
     var domarray =
       ['div', { 'class': 'inserted-wrapper' },
         ['i', { 'class': 'inserted-i' }],
-        ['a', { 'class': 'inserted-a', 'href': '#', text: 'Hello!' }]
+        ['a', { 'class': 'inserted-a', 'href': '#', text: 'Hello!', click: function () { count += 1; } }]
       ];
-    var style = {
-      '.inserted-wrapper': {
-        'background-color': 'red'
-      }
-    };
-
-    xio.css(style);
 
     var inserted = xio.insert({
       id: 'test',
@@ -122,8 +117,39 @@
 
     equal(inserted !== undefined, true, 'returns something');
     equal(test.length > 0, true, 'inserts elements');
+    equal($('.test-container').text(), 'Test.Test2.Hello!', 'appends element');
     equal($('a', test).hasClass('inserted-a'), true, 'inserts children');
     equal($('a', test).text(), 'Hello!', 'inserts text');
+
+    $('a', test).click();
+    equal(count, 1, 'attaches even handlers');
+
+    var inserted_after = xio.insert({
+      id: 'test',
+      container: '.test-container-after',
+      after: '.test-inner',
+      build: domarray
+    });
+
+    equal($('.test-container-after').text(), 'Test.Hello!Test2.', 'appends element after');
+
+    var inserted_before = xio.insert({
+      id: 'test',
+      container: '.test-container-before',
+      before: '.test-inner, .test-inner2',
+      build: domarray
+    });
+
+    equal($('.test-container-before').text(), 'Hello!Test.Hello!Test2.', 'appends element before');
+
+    var inserted_prepend = xio.insert({
+      id: 'test',
+      container: '.test-container-prepend',
+      prepend: true,
+      build: domarray
+    });
+
+    equal($('.test-container-prepend').text(), 'Hello!Test.Test2.', 'prepends element');
 
   });
 

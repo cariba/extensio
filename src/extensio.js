@@ -329,7 +329,7 @@ window.xio = xio = (function ( $ ) {
     }
 
     // Ensure that ob is an array
-    if( ! $.isArray(ob.build) ) {
+    if( ! $.isArray( ob.build ) ) {
       return this.error({
         err: 'ob.build must be valid input for xio.build.'
       });
@@ -338,8 +338,20 @@ window.xio = xio = (function ( $ ) {
     // Run xio.build on it
     var elem = this.build( ob.build );
 
-    // Add it to any container elements
-    $(ob.container).append( elem );
+    // Check for insertion method (append [default], prepend, after or before)
+    if( ob.after && typeof ob.after === 'string' ) {
+      // Insert after ob.after (within ob.container)
+      $(ob.after, ob.container).after( elem );
+    } else if( ob.before && typeof ob.before === 'string' ) {
+      // Insert before ob.before (within ob.container)
+      $(ob.before, ob.container).before( elem );
+    } else if( ob.prepend === true ) {
+      // Prepend to ob.container
+      $(ob.container).prepend( elem );
+    } else {
+      // Append to ob.container
+      $(ob.container).append( elem );
+    }
 
     return elem;
 
