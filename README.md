@@ -4,7 +4,7 @@ Making browser extensions a breeze.
 
 Browser extensions are a really neat way of integrating straight into web browser UI, a place people are spending an increasing amount of time, while also offering a unique opportunity to embed actions directly into the familiar UI of services like Twitter and Facebook.
 
-However, the API differences between Chrome, Firefox and Safari are vast. This is an attempt to create a library that normalises this different.
+However, the API differences between Chrome, Firefox and Safari are vast. This is an attempt to create a library that removes these differences and makes extension development easier and quicker.
 
 ### Usage
 
