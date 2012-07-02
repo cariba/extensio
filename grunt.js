@@ -28,6 +28,16 @@ module.exports = function(grunt) {
         ],
         dest: '<%= pkg.name %>.js'
       },
+      chrome: {
+        src: [
+          '<banner:meta.banner>',
+          '<file_strip_banner:src/<%= pkg.name %>.js>',
+          '<file_strip_banner:src/chrome.js>',
+          '<file_strip_banner:src/firefox.js>',
+          '<file_strip_banner:src/safari.js>'
+        ],
+        dest: 'test/chrome/<%= pkg.name %>.js'
+      },
       release: {
         src: [
           '<banner:meta.banner>',

@@ -1,12 +1,5 @@
-/**
- * extensio
- *
- * TODO:
- *   Find a way to only run Ch/FF/Sa code when we are in that evironment, and make the api
- *   accessible from an xio api
- *   Extension generator from the command line (xio init)
- *   Browser UI stuff
- */
+/*! extensio - v0.0.2 - 2012-07-02
+* Copyright (c) 2012 Tom Ashworth; MIT License */
 
 var xio;
 window.xio = xio = (function ( $ ) {
@@ -365,3 +358,5 @@ window.xio = xio = (function ( $ ) {
   return new Xio();
 
 }( jQuery ));
+
+

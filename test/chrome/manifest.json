@@ -1,0 +1,10 @@
+{
+  "name": "extensio-test",
+  "version": "0.0.1",
+  "background": {
+    "page": "main.html"
+  },
+  "permissions": [
+    "tabs", "http://*/*"
+  ]
+}
