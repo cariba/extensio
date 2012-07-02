@@ -60,10 +60,18 @@
     equal(xio.env, 1, 'detects Chrome');
   });
 
-  module('extensio#chrome-inject');
+  module('extensio#chrome-data');
 
   test('xio.data', function () {
     equal(typeof xio.data, 'function', 'xio.data is a function');
+
+    // chrome-extension://abcdefghijklmnop/images/kitten.jpg
+    var url = xio.data('res/kitten.jpg');
+
+    var pattern = /^chrome-extension:\/{2,}[a-z]+\/res\/kitten.jpg$/g;
+
+    ok(url.match(pattern), 'returned url matches pattern');
+
   });
 
 }( jQuery ));
