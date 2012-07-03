@@ -56,10 +56,6 @@
     }
   });
 
-  test('xio._api', function () {
-    ok(xio._api, 'is true');
-  });
-
   /**
    * DOM Manipulation & CSS
    */

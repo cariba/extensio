@@ -21,9 +21,6 @@ module.exports = function(grunt) {
       dist: {
         src: [
           '<banner:meta.banner>',
-          'src/chrome.js',
-          'src/firefox.js',
-          'src/safari.js',
           'src/<%= pkg.name %>.js'
         ],
         dest: '<%= pkg.name %>.js'
@@ -31,9 +28,6 @@ module.exports = function(grunt) {
       chrome: {
         src: [
           '<banner:meta.banner>',
-          'src/chrome.js',
-          'src/firefox.js',
-          'src/safari.js',
           'src/<%= pkg.name %>.js'
         ],
         dest: 'test/chrome/<%= pkg.name %>.js'
@@ -41,9 +35,6 @@ module.exports = function(grunt) {
       release: {
         src: [
           '<banner:meta.banner>',
-          'src/chrome.js',
-          'src/firefox.js',
-          'src/safari.js',
           'src/<%= pkg.name %>.js'
         ],
         dest: 'release/<%= pkg.name %>-<%= pkg.version %>.js'

@@ -10,20 +10,6 @@ window.xio_chrome = (function ( chrome ) {
 
   return function ( Xio ) {
 
-    /**
-     * xio.data returns a fully-qualified URL for a string resource relative to the root extension directory.
-     *
-     * Example usage:
-     *   xio.data('image/kitten.jpg'); // chrome-extension://abcdefghijklmnop/images/kitten.jpg
-     *
-     * Returns a string URL for the specified resource.
-     */
-    Xio.prototype.data = function( resource ) {
-      if( typeof resource === 'string' ) {
-        return chrome.extension.getURL( resource );
-      }
-    };
-
   };
 
 }( window.chrome ));
@@ -77,20 +63,6 @@ window.xio = xio = (function ( $ ) {
     // Directly log errors?
     this.logging = true;
 
-    // Check for the prescence of Chrome, Firefox and Safari code
-    // Note to self: window.xio_ could be used for mocking API?
-    var env;
-    for( env in global.env ) {
-      if( global.env.hasOwnProperty(env) ) {
-        if( window['xio_' + env] === undefined ) {
-          this.error({
-            err: ["Could not find ", 'xio_' + env, " in the current environment."],
-            fatal: true
-          });
-        }
-      }
-    }
-
     // Detect the current environment & extend Xio using the
     // appropriate environment code
     this.env = 0;
@@ -118,26 +90,18 @@ window.xio = xio = (function ( $ ) {
   };
 
   /**
-   * _api is in internal method that extends Xio by running the environment
-   * code that will have been attached to the window object.
+   * is_x methods are useful for determining which evironment we are
    *
-   * It will not run if window.xio_development is true.
+   * Returns true or false
    */
-  Xio.prototype._api = function () {
-
-    if( window.xio_development === true ) {
-      return;
-    }
-    // Don't run twice
-    if( this._api_run === true ) {
-      return this.error({
-        err: "xio._api should not be run twice."
-      });
-    }
-    this._api_run = true;
-    // Run the correct property of window, in the context of Xio. (ie, 'this' will be Xio)
-    window['xio_' + this.env_name].apply( this, [Xio] );
-
+  Xio.prototype.is_chrome = function () {
+    return this.env === global.env.chrome;
+  };
+  Xio.prototype.is_firefox = function () {
+    return this.env === global.env.firefox;
+  };
+  Xio.prototype.is_safari = function () {
+    return this.env === global.env.firefox;
   };
 
   /**=============================================================
@@ -450,14 +414,28 @@ window.xio = xio = (function ( $ ) {
 
   };
 
+  /**=============================================================
+   Extension APIs
+   =============================================================**/
+
+  /**
+     * xio.data returns a fully-qualified URL for a string resource relative to the root extension directory.
+     *
+     * Example usage:
+     *   xio.data('image/kitten.jpg'); // chrome-extension://abcdefghijklmnop/images/kitten.jpg
+     *
+     * Returns a string URL for the specified resource.
+     */
+    Xio.prototype.data = function( resource ) {
+      if( typeof resource === 'string' ) {
+        return chrome.extension.getURL( resource );
+      }
+    };
+
   /**
    * Kick things off!
    */
   var xio = new Xio();
-  /**
-   * Extend the api
-   */
-  xio._api();
 
   return xio;
 
