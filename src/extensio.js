@@ -92,7 +92,7 @@ window.xio = xio = (function ( $ ) {
     // Don't run twice
     if( this._api_run === true ) {
       return this.error({
-        err: "xio._api should not be run twice"
+        err: "xio._api should not be run twice."
       });
     }
     this._api_run = true;

@@ -1,6 +1,11 @@
-/*! extensio - v0.0.2 - 2012-07-02
+/*! extensio - v0.0.2 - 2012-07-03
 * Copyright (c) 2012 Tom Ashworth; MIT License */
 
+/**
+ * xio_chrome extends Xio, adding methods that cover the Chrome API
+ *
+ * It is called from the Xio constructor in extensio.js.
+ */
 window.xio_chrome = (function ( chrome ) {
 
   return function ( Xio ) {
@@ -22,8 +27,27 @@ window.xio_chrome = (function ( chrome ) {
   };
 
 }( window.chrome ));
+/**
+ * extensio for Firefox
+ */
+
 window.xio_firefox = function () {};
+/**
+ * extensio for Safari
+ */
+
 window.xio_safari = function () {};
+/**
+ * extensio
+ *
+ *
+ * TODO:
+ *   Find a way to only run Ch/FF/Sa code when we are in that evironment, and make the api
+ *   accessible from an xio api
+ *   Extension generator from the command line (xio init)
+ *   Browser UI stuff
+ */
+
 var xio;
 window.xio = xio = (function ( $ ) {
 
@@ -107,7 +131,7 @@ window.xio = xio = (function ( $ ) {
     // Don't run twice
     if( this._api_run === true ) {
       return this.error({
-        err: "xio._api should not be run twice"
+        err: "xio._api should not be run twice."
       });
     }
     this._api_run = true;
