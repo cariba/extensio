@@ -31,13 +31,6 @@ module.exports = function(grunt) {
           'src/<%= pkg.name %>.js'
         ],
         dest: 'test/chrome/<%= pkg.name %>.js'
-      },
-      release: {
-        src: [
-          '<banner:meta.banner>',
-          'src/<%= pkg.name %>.js'
-        ],
-        dest: 'release/<%= pkg.name %>-<%= pkg.version %>.js'
       }
     },
     min: {
@@ -47,18 +40,11 @@ module.exports = function(grunt) {
           '<config:concat.dist.dest>'
         ],
         dest: '<%= pkg.name %>.min.js'
-      },
-      release: {
-        src: [
-          '<banner:meta.banner>',
-          '<config:concat.dist.dest>'
-        ],
-        dest: 'release/<%= pkg.name %>-<%= pkg.version %>.min.js'
       }
     },
     watch: {
       files: ['<config:lint.files>', 'test/*.js', 'test/*.html', 'package.json'],
-      tasks: 'lint concat min qunit'
+      tasks: 'lint concat qunit'
     },
     jshint: {
       options: {
