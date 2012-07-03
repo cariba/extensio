@@ -14,7 +14,7 @@ Right now extensio is not really worth using, but keeps tabs on how it's getting
 
 Building extensio is done via [grunt](https://github.com/cowboy/grunt).
 
-To add funcitonality, the `src/` directory should hold everything you need. That code is reasonably well documented, and is structured much like the Jquery source.
+To add funcitonality, the `src/` directory should hold everything you need. That code is reasonably well documented, and is structured much like the jQuery source.
 
 To test extensio as an extension you need to use the appropriate development method for each browser using the folders in `test/`. For example, in Chrome, add `test/chrome/` as an unpacked extension, and then inspect the background page. In the console you see the results of the tests.
 

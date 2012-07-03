@@ -2,28 +2,6 @@
 * Copyright (c) 2012 Tom Ashworth; MIT License */
 
 /**
- * xio_chrome extends Xio, adding methods that cover the Chrome API
- *
- * It is called from the Xio constructor in extensio.js.
- */
-window.xio_chrome = (function ( chrome ) {
-
-  return function ( Xio ) {
-
-  };
-
-}( window.chrome ));
-/**
- * extensio for Firefox
- */
-
-window.xio_firefox = function () {};
-/**
- * extensio for Safari
- */
-
-window.xio_safari = function () {};
-/**
  * extensio
  *
  *
@@ -94,13 +72,13 @@ window.xio = xio = (function ( $ ) {
    *
    * Returns true or false
    */
-  Xio.prototype.is_chrome = function () {
+  Xio.prototype.isChrome = function () {
     return this.env === global.env.chrome;
   };
-  Xio.prototype.is_firefox = function () {
+  Xio.prototype.isFirefox = function () {
     return this.env === global.env.firefox;
   };
-  Xio.prototype.is_safari = function () {
+  Xio.prototype.isSafari = function () {
     return this.env === global.env.firefox;
   };
 
@@ -427,9 +405,21 @@ window.xio = xio = (function ( $ ) {
      * Returns a string URL for the specified resource.
      */
     Xio.prototype.data = function( resource ) {
-      if( typeof resource === 'string' ) {
+      if( typeof resource !== 'string' ) {
+        return this.error({
+          err: 'Resource must be a string.'
+        });
+      }
+      // Pass the request on to Chrome's method
+      if( this.isChrome() ) {
         return chrome.extension.getURL( resource );
       }
+      // Build a URL for Safari
+      if( this.isSafari() ) {
+        return safari.extension.baseURI + resource;
+      }
+      // Firefox doesn't seem to allow access to resources. Hmm.
+      if( this.is_firefox ) {}
     };
 
   /**
