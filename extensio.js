@@ -68,7 +68,7 @@ window.xio = xio = (function ( $ ) {
   };
 
   /**
-   * is_x methods are useful for determining which evironment we are
+   * isX methods are for determining which evironment we are in.
    *
    * Returns true or false
    */
@@ -418,8 +418,10 @@ window.xio = xio = (function ( $ ) {
       if( this.isSafari() ) {
         return safari.extension.baseURI + resource;
       }
-      // Firefox doesn't seem to allow access to resources. Hmm.
-      if( this.is_firefox ) {}
+      // Pass it on to firefox
+      if( this.is_firefox ) {
+        return self.data.url( resource );
+      }
     };
 
   /**
