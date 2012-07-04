@@ -84,9 +84,21 @@
         false,
         '{} === [] should fail'
       );
+      equal(
+        mt.equal('some-text', 'some-text', 'string equality'),
+        true,
+        'string equality'
+      );
+      equal(
+        mt.equal('some-text', 'some-other-text', 'string inequality'),
+        false,
+        'string inequality'
+      );
     });
 
   });
+
+  mt.fin();
 
 }( jQuery ));
 

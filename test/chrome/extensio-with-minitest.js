@@ -34,11 +34,11 @@ window.mt = (function () {
     this.buffer = [];
     
     this.msgs = {
-      fail: '- F -',
-      failed: '- F :',
-      fin: '- D :',
-      total: '- T :',
-      assertions: '- A :'
+      fail:       'F !',
+      failed:     'F :',
+      fin:        'D :',
+      total:      'T :',
+      assertions: 'A :'
     };
   };
 
@@ -456,7 +456,8 @@ window.xio = xio = (function ( $ ) {
     // Ensure that ob is an array
     if( ! $.isArray( ob ) ) {
       return this.error({
-        err: 'ob must be an array for DOM building.'
+        err: 'ob must be an array for DOM building.',
+        fatal: true
       });
     }
 
@@ -466,7 +467,8 @@ window.xio = xio = (function ( $ ) {
     // Ensure that tag is a string
     if( typeof tag !== 'string' ) {
       return this.error({
-        err: 'The first element of the DOM array must be a string.'
+        err: 'The first element of the DOM array must be a string.',
+        fatal: true
       });
     }
 
@@ -474,7 +476,7 @@ window.xio = xio = (function ( $ ) {
     var attr = ob[1];
 
     // Ensure that attr is an object
-    if( attr === undefined || typeof attr !== 'object' ) {
+    if( typeof attr === 'undefined' || typeof attr !== 'object' || $.isArray( attr ) ) {
       // Send a (hopefully helpful) error if the user passes in an array
       if( $.isArray( attr ) ) {
         this.error({

@@ -10,8 +10,8 @@
       "matches": ["http://*/*"],
       "js": [
         "jquery.js",
-        "extensio.js",
-        "test.js"
+        "extensio-with-minitest.js",
+        "chrome-content-script-test.js"
       ]
     }
   ]

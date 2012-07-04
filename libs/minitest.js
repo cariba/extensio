@@ -31,11 +31,11 @@ window.mt = (function () {
     this.buffer = [];
     
     this.msgs = {
-      fail: '- F -',
-      failed: '- F :',
-      fin: '- D :',
-      total: '- T :',
-      assertions: '- A :'
+      fail:       'F !',
+      failed:     'F :',
+      fin:        'D :',
+      total:      'T :',
+      assertions: 'A :'
     };
   };
 

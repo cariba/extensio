@@ -31,7 +31,7 @@ module.exports = function(grunt) {
           'libs/minitest.js',
           'src/<%= pkg.name %>.js'
         ],
-        dest: 'test/chrome/<%= pkg.name %>.js'
+        dest: 'test/chrome/<%= pkg.name %>-with-minitest.js'
       }
     },
     min: {
