@@ -53,7 +53,7 @@ window.xio = xio = (function ( $ ) {
       this.env = global.env.safari;
       this.env_name = 'safari';
     }
-    else if( window.self && window.self.extension ) {
+    else if( window.self && window.self.port ) {
       this.env = global.env.firefox;
       this.env_name = 'firefox';
     } else {
@@ -416,13 +416,16 @@ window.xio = xio = (function ( $ ) {
       if( this.isChrome() ) {
         return chrome.extension.getURL( resource );
       }
+      // Firefox does not support this method
+      if( this.isFirefox() ) {
+        this.error({
+          err: 'xio.data is not currently available in Firefox. Support is coming.',
+          fatal: true
+        });
+      }
       // Build a URL for Safari
       if( this.isSafari() ) {
         return safari.extension.baseURI + resource;
-      }
-      // Pass it on to firefox
-      if( this.is_firefox ) {
-        return self.data.url( resource );
       }
     };
 

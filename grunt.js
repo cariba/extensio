@@ -39,6 +39,21 @@ module.exports = function(grunt) {
           'test/shared/shared-content-script-test.js'
         ],
         dest: 'test/chrome/chrome-all-tests.js'
+      },
+      firefox: {
+        src: [
+          '<banner:meta.banner>',
+          'libs/minitest.js',
+          'src/<%= pkg.name %>.js'
+        ],
+        dest: 'test/firefox/data/<%= pkg.name %>-with-minitest.js'
+      },
+      firefoxtest: {
+        src: [
+          'test/firefox/data/firefox-content-script-test.js',
+          'test/shared/shared-content-script-test.js'
+        ],
+        dest: 'test/firefox/data/firefox-all-tests.js'
       }
     },
     min: {
