@@ -31,6 +31,9 @@ $(function () {
    * DOM element building
    */
   mt.test('xio.build', function () {
+
+    xio.logging = false;
+
     // Test sensible data
     var domarray =
       ['div', { 'class': 'test-elem' },
@@ -50,6 +53,7 @@ $(function () {
     var crapElem = xio.build(crap);
     mt.equal($(crapElem).text(), '', 'reasonable crap still works');
 
+
     // Try some nonsense
     var result;
     crap =
@@ -63,6 +67,8 @@ $(function () {
       mt.equal(e, 'xio : The first element of the DOM array must be a string.', 'absolute crap throws error.');
     }
     
+    xio.logging = true;
+
   });
 
   /**

@@ -38,11 +38,12 @@
    * Minitest
    */
 
+  mt.silence();
+
   module('minitest#basic');
 
   test('mt', function () {
     ok(mt, 'mt is available in the global scope');
-    mt.silence();
   });
 
   test('mt.test', function () {
