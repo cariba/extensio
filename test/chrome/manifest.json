@@ -7,7 +7,7 @@
   ],
   "content_scripts": [
     {
-      "matches": ["http://*/*"],
+      "matches": ["http://localhost/*"],
       "js": [
         "jquery.js",
         "extensio-with-minitest.js",
