@@ -34,7 +34,7 @@ window.mt = (function () {
       fail:       'F !',
       failed:     'F :',
       fin:        'D :',
-      total:      'T :',
+      test:       'T :',
       assertions: 'A :'
     };
   };
@@ -68,6 +68,8 @@ window.mt = (function () {
     if( ! this.start ) {
       this.start = (new Date()).getTime();
     }
+
+    this.log(this.msgs.test, id);
 
     // Keep track of how many tests have been run
     this.total += 1;
@@ -292,7 +294,7 @@ window.mt = (function () {
   Minitest.fn.fin = function () {
     var elapsed = ((new Date()).getTime() - this.start);
     this.log( this.msgs.fin, elapsed + 'ms' );
-    this.log( this.msgs.total, this.total );
+    this.log( this.msgs.test, this.total );
     this.log( this.msgs.assertions, this.assertions );
     this.log( this.msgs.failed, this.failed );
   };
