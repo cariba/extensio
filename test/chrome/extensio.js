@@ -5,7 +5,8 @@
  * Minitest is a tiny Javascript test library for guerilla testing in the browser.
  *
  * It does not:
- *   - do asynchronous test
+ *   - do asynchronous tests
+ *   - non-strict equality
  *   - give you nicely styled output
  *   - tell you you're good looking
  *
@@ -27,6 +28,7 @@ window.mt = (function () {
     this.passed = 0;
     this.failed = 0;
     this.start = null;
+    this.silent = false;
 
     this.current = null;
     this.buffer = [];
@@ -41,6 +43,15 @@ window.mt = (function () {
   };
 
   Minitest.fn = Minitest.prototype;
+
+  /**
+   * Wrap console.log so that Minitest can be run in quiet mode
+   */
+  Minitest.fn.log = function () {
+    if( ! this.silent ) {
+      console.log.apply( console, arguments );
+    }
+  };
 
   /**
    * Begins a new test
@@ -199,6 +210,38 @@ window.mt = (function () {
   };
 
   /**
+   * A strict equality test.
+   *
+   * You are only shown the err if it fails.
+   *
+   * Example usage:
+   *
+   *  mt.equal(false, true, 'This test will fail.');
+   *
+   * Returns whether the assertion passed.
+   */
+  Minitest.fn.equal = function ( actual, expected, err ) {
+
+    return this.run(function () {
+
+      if( actual !== expected ) {
+        return {
+          result: false,
+          actual: actual,
+          expected: expected,
+          err: err
+        };
+      } else {
+        return {
+          result: true
+        };
+      }
+
+    });
+
+  };
+
+  /**
    * Run if shit goes wrong.
    *
    * msg is an object:
@@ -216,16 +259,27 @@ window.mt = (function () {
   };
 
   /**
+   * Make Minitest silent. Useful for unit testing Minitest.
+   *
+   * Returns nada.
+   */
+  Minitest.fn.silence = function ( yayornay ) {
+    if( typeof yayornay === 'undefined' ) {
+      yayornay = true;
+    }
+    this.silent = yayornay;
+  };
+
+  /**
    * Flush outputs the fail.
    *
    * Returns nada.
    */
   Minitest.fn.flush = function ( ) {
-    
     var i = 0, length = this.buffer.length;
     for( ; i < length; i++ ) {
-      console.log( this.msgs.fail );
-      console.log.apply(console, this.buffer[i] );
+      this.log( this.msgs.fail );
+      this.log.apply( this, this.buffer[i] );
     }
 
     this.buffer = [];
@@ -240,10 +294,10 @@ window.mt = (function () {
    */
   Minitest.fn.fin = function () {
     var elapsed = ((new Date()).getTime() - this.start);
-    console.log( this.msgs.fin, elapsed + 'ms' );
-    console.log( this.msgs.total, this.total );
-    console.log( this.msgs.assertions, this.assertions );
-    console.log( this.msgs.failed, this.failed );
+    this.log( this.msgs.fin, elapsed + 'ms' );
+    this.log( this.msgs.total, this.total );
+    this.log( this.msgs.assertions, this.assertions );
+    this.log( this.msgs.failed, this.failed );
   };
 
   return new Minitest();

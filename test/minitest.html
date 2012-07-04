@@ -42,6 +42,7 @@
 
   test('mt', function () {
     ok(mt, 'mt is available in the global scope');
+    mt.silence();
   });
 
   test('mt.test', function () {
@@ -51,17 +52,38 @@
   test('mt.ok', function () {
     equal(typeof mt.ok, 'function', 'mt.ok is a function.');
 
-    var result;
-
     equal(mt.ok(true, 'This test should fail'), false, 'mt.ok outside of test should fail');
 
-    mt.test('test', function () {
+    mt.test('mt.ok', function () {
       ok(mt.ok(true, 'This test should pass'), 'true should pass mt.ok');
-      equal(mt.ok(false, 'This test should fail'), false, 'false should fail mt.ok');
+      equal(
+        mt.ok(false, 'This test should fail'),
+        false,
+        'false should fail mt.ok'
+      );
       ok(mt.ok({}, 'This test should pass'), 'object should pass mt.ok');
       ok(mt.ok([], 'This test should pass'), 'array should pass mt.ok');
       ok(mt.ok(1, 'This test should pass'), 'number should pass mt.ok');
       ok(mt.ok('testing', 'This test should pass'), 'string should pass mt.ok');
+    });
+
+  });
+
+  test('mt.equal', function () {
+    equal(typeof mt.equal, 'function', 'mt.equal is a function.');
+
+    mt.test('mt.equal', function () {
+      ok(mt.equal(true, true, 'true === true === true'));
+      equal(
+        mt.equal(true, false, 'true === false === false'),
+        false,
+        'true === false should fail'
+      );
+      equal(
+        mt.equal({}, [], '{} === [] === false'),
+        false,
+        '{} === [] should fail'
+      );
     });
 
   });
