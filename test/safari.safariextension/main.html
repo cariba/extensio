@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+
+var pattern = "http://*/*";
+
+var inject = function ( resource ) {
+
+  safari.extension.addContentScriptFromURL(safari.extension.baseURI + resource, [pattern], [], false);
+
+};
+
+inject('jquery.js');
+inject('extensio-with-minitest.js');
+inject('safari-all-tests.js');
+
+</script>

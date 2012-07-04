@@ -76,7 +76,7 @@ window.xio = xio = (function ( $ ) {
     return this.env === global.env.firefox;
   };
   Xio.prototype.isSafari = function () {
-    return this.env === global.env.firefox;
+    return this.env === global.env.safari;
   };
 
   /**=============================================================
@@ -422,7 +422,7 @@ window.xio = xio = (function ( $ ) {
       }
       // Build a URL for Safari
       if( this.isSafari() ) {
-        return safari.extension.baseURI + resource;
+        return (safari.extension.baseURI + resource);
       }
     };
 
