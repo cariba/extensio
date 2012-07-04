@@ -28,6 +28,7 @@ module.exports = function(grunt) {
       chrome: {
         src: [
           '<banner:meta.banner>',
+          'libs/minitest.js',
           'src/<%= pkg.name %>.js'
         ],
         dest: 'test/chrome/<%= pkg.name %>.js'
@@ -43,7 +44,7 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: ['<config:lint.files>', 'test/*.js', 'test/*.html', 'package.json'],
+      files: ['<config:lint.files>', 'test/*.js', 'test/*.html', 'package.json', 'libs/minitest.js'],
       tasks: 'lint concat qunit'
     },
     jshint: {
