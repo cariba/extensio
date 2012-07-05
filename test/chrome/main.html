@@ -46,18 +46,25 @@ $(function () {
   mt.test('xio.port.on', function () {
     mt.equal(typeof xio.port.on, 'function', 'is a function');
 
-    // Basic port.on functionality
-    var token = xio.port.on('connection', function ( port ) {
+    var testCallback = function ( port ) {
       mt.equal(typeof port, 'object', 'is an object');
-    });
+    };
+
+    // Basic port.on functionality
+    var token = xio.port.on('connection', testCallback);
 
     mt.equal(typeof token, 'string', 'token is a string');
+
+    mt.equal(xio.port.subscribers('connection').length, 1, 'xio.port.subscribers returns the correct length array of subscribers');
+
+    mt.equal(xio.port.subscribers('connection')[0].token, token, 'xio.port.subscribers returns the correct token');
+    mt.equal(xio.port.subscribers('connection')[0].cb, testCallback, 'xio.port.subscribers returns the callback');
 
     // Throws exceptions?
     try {
       xio.port.on({a: 123}, function ( port ) {});
     } catch (e) {
-      mt.equal(e, 'xio : Event must be a string.');
+      mt.equal(e, 'xio : port.on event must be a string.', 'returns correct error message');
     }
 
     try {

@@ -503,8 +503,7 @@
     var port = {};
 
     // Subscribers
-    var subID = 0;
-    var sub = {};
+    var subscribe = {};
 
     var special = {
       connection: function () {}
@@ -531,7 +530,7 @@
       // Ensure event is a string
       if( typeof event !== 'string' ) {
         xio.error({
-          err: 'Event must be a string.',
+          err: 'port.on event must be a string.',
           fatal: true
         });
       }
@@ -548,12 +547,12 @@
       var token = createToken( event );
 
       // Initialise the port object
-      if( ! sub[event] ) {
-        sub[event] = [];
+      if( ! subscribe[event] ) {
+        subscribe[event] = [];
       }
 
       // Store the subscription
-      sub[event].push({
+      subscribe[event].push({
         token: token,
         cb: cb
       });
@@ -566,6 +565,26 @@
      * port.emit posts a message to all connected ports.
      */
     port.emit = function () {};
+
+    /**
+     * xio.port.subscribers returns an array of all subscribers to a specified event
+     *
+     * Example:
+     *   var teaDrinkers = xio.port.subscribers('kettleBoiled');
+     */
+    port.subscribers = function ( event ) {
+
+      // Ensure event is a string
+      if( typeof event !== 'string' ) {
+        xio.error({
+          err: 'xio.subscribers event must be a string.',
+          fatal: true
+        });
+      }
+
+      return subscribe[event];
+
+    };
 
     xio.port = port;
 
