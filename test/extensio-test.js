@@ -157,18 +157,24 @@
    * Ports
    */
   
-  module('extensio#ports');
+  module('extensio#script');
 
-  test('xio.port', function () {
-    equal(typeof xio.port, 'object', 'is an object');
+  test('xio.script', function () {
+    equal(typeof xio.script, 'object', 'is an object');
   });
 
-  test('xio.port.on', function () {
-    equal(typeof xio.port.on, 'function', 'is a function');
+  test('xio.script.on', function () {
+    equal(typeof xio.script.on, 'function', 'is a function');
+    var token = xio.script.on( 'test', function () {});
+    equal(typeof token, 'string', 'token is a string');
   });
 
-  test('xio.port.emit', function () {
-    equal(typeof xio.port.emit, 'function', 'is a function');
+  test('xio.script.subscribers', function () {
+    equal(typeof xio.script.subscribers, 'function', 'is a function');
+  });
+
+  test('xio.script.publish', function () {
+    equal(typeof xio.script.publish, 'function', 'is a function');
   });
 
 }( jQuery ));

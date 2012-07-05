@@ -27,6 +27,9 @@ $(function () {
 
   });
 
+  var port = chrome.extension.connect({name: "test-port"});
+  port.postMessage({example: "something 1234"});
+
 });
 $(function () {
 

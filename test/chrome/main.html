@@ -39,45 +39,52 @@ $(function () {
   /**
    * Ports
    */
-  mt.test('xio.port', function () {
-    mt.equal(typeof xio.port, 'object', 'is an object');
+  
+  var connectionFired = false;
+
+  mt.test('xio.script', function () {
+    mt.equal(typeof xio.script, 'object', 'is an object');
   });
 
-  mt.test('xio.port.on', function () {
-    mt.equal(typeof xio.port.on, 'function', 'is a function');
+  mt.test('xio.script.on', function () {
+    mt.equal(typeof xio.script.on, 'function', 'is a function');
 
     var testCallback = function ( port ) {
       mt.equal(typeof port, 'object', 'is an object');
+      connectionFired = true;
     };
 
     // Basic port.on functionality
-    var token = xio.port.on('connection', testCallback);
+    var token = xio.script.on('connection', testCallback);
 
     mt.equal(typeof token, 'string', 'token is a string');
 
-    mt.equal(xio.port.subscribers('connection').length, 1, 'xio.port.subscribers returns the correct length array of subscribers');
+    mt.equal(xio.script.subscribers('connection').length, 1, 'xio.script.subscribers returns the correct length array of subscribers');
 
-    mt.equal(xio.port.subscribers('connection')[0].token, token, 'xio.port.subscribers returns the correct token');
-    mt.equal(xio.port.subscribers('connection')[0].cb, testCallback, 'xio.port.subscribers returns the callback');
+    mt.equal(xio.script.subscribers('connection')[0].token, token, 'xio.script.subscribers returns the correct token');
+    mt.equal(xio.script.subscribers('connection')[0].cb, testCallback, 'xio.script.subscribers returns the callback');
 
     // Throws exceptions?
     try {
-      xio.port.on({a: 123}, function ( port ) {});
+      xio.script.on({a: 123}, function ( port ) {});
     } catch (e) {
-      mt.equal(e, 'xio : port.on event must be a string.', 'returns correct error message');
+      mt.equal(e, 'xio : script.on event must be a string.', 'returns correct error message with object event');
     }
 
     try {
-      xio.port.on('someEvent', 'loadOfRubbish');
+      xio.script.on('someEvent', 'loadOfRubbish');
     } catch (e) {
-      mt.equal(e, 'xio : port.on callback must be a function.');
+      mt.equal(e, 'xio : script.on callback must be a function.', 'return correct error message with string callback');
     }
-
 
   });
 
-  mt.test('xio.port.emit', function () {
-    mt.equal(typeof xio.port.emit, 'function', 'is a function');
+  mt.test('xio.script.publish', function () {
+
+    xio.script.publish( 'connection', {} );
+
+    mt.ok(connectionFired, 'connection was made');
+
   });
 
   mt.fin();

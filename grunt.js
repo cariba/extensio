@@ -17,6 +17,10 @@ module.exports = function(grunt) {
     qunit: {
       all: ['test/*.html']
     },
+    server: {
+      port: 7891,
+      base: './test/web'
+    },
     concat: {
       dist: {
         src: [

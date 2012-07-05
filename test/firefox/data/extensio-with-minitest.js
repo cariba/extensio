@@ -385,9 +385,9 @@ window.mt = (function () {
     }
 
     /**
-     * Initialise the port object
+     * Initialise the script API
      */
-    this.createPort();
+    this.createScriptAPI();
   };
 
   /**
@@ -783,7 +783,7 @@ window.mt = (function () {
   };
 
   /**
-   * xio.port is a EventEmitter-style API for persistent communication between the
+   * xio.script is a EventEmitter-style API for persistent communication between the
    * background page and the content scripts.
    *
    * There are a few special events.
@@ -791,27 +791,23 @@ window.mt = (function () {
    *     This event passes the port object on which the connection was made (another EventEmitter).
    *
    * Example usage:
-   *   xio.port.on('connection', function ( port ) {
+   *   xio.script.on('connection', function ( port ) {
    *     port.on('myEvent', function ( data ) {
    *       // Do something interesting...
    *     });
    *   });
    *
    */
-  Xio.prototype.createPort = function () {
+  Xio.prototype.createScriptAPI = function () {
 
     // Keep a reference to xio
     var xio = this;
 
-    // The root port object
-    var port = {};
+    // The root script object
+    var script = {};
 
     // Subscribers
     var subscribe = {};
-
-    var special = {
-      connection: function () {}
-    };
 
     /**
      * Generate a token for event subscription.
@@ -823,18 +819,18 @@ window.mt = (function () {
     };
 
     /**
-     * port.on subscribes to events from all connected ports.
+     * script.on subscribes to events from all connected ports.
      *
      * As mentioned above, there are special events that pass in specific
      * data that are designed to make the job of managing ports to many tabs
      * simple and easy.
      */
-    port.on = function ( event, cb ) {
+    script.on = function ( event, cb ) {
 
       // Ensure event is a string
       if( typeof event !== 'string' ) {
         xio.error({
-          err: 'port.on event must be a string.',
+          err: 'script.on event must be a string.',
           fatal: true
         });
       }
@@ -842,7 +838,7 @@ window.mt = (function () {
       // Ensure cb is a function
       if( typeof cb !== 'function' ) {
         xio.error({
-          err: 'port.on callback must be a function.',
+          err: 'script.on callback must be a function.',
           fatal: true
         });
       }
@@ -850,7 +846,7 @@ window.mt = (function () {
       // Generate a token for this subscription
       var token = createToken( event );
 
-      // Initialise the port object
+      // Initialise the script object
       if( ! subscribe[event] ) {
         subscribe[event] = [];
       }
@@ -866,22 +862,50 @@ window.mt = (function () {
     };
 
     /**
-     * port.emit posts a message to all connected ports.
-     */
-    port.emit = function () {};
-
-    /**
-     * xio.port.subscribers returns an array of all subscribers to a specified event
+     * xio.script.publish fires the callbacks of all subscribed events.
+     *
+     * Generally this is an internal method only.
      *
      * Example:
-     *   var teaDrinkers = xio.port.subscribers('kettleBoiled');
+     *   xio.script.publish('myScriptEvent');
      */
-    port.subscribers = function ( event ) {
+    script.publish = function ( event, data ) {
 
       // Ensure event is a string
       if( typeof event !== 'string' ) {
         xio.error({
-          err: 'xio.subscribers event must be a string.',
+          err: 'xio.script.publish event must be a string.',
+          fatal: true
+        });
+      }
+
+      // Don't try and fire non-existent subscribers
+      if( typeof subscribe[event] === "undefined" || subscribe[event].length === 0 ) {
+        return;
+      }
+
+      // Iterate through the subscribers and fire that callback
+      var subscribers = subscribe[event];
+
+      var i = 0, length = subscribers.length;
+      for( ; i < length; i++ ) {
+        subscribers[i].cb( data );
+      }
+
+    };
+
+    /**
+     * xio.script.subscribers returns an array of all subscribers to a specified event
+     *
+     * Example:
+     *   var listeners = xio.script.subscribers('connection');
+     */
+    script.subscribers = function ( event ) {
+
+      // Ensure event is a string
+      if( typeof event !== 'string' ) {
+        xio.error({
+          err: 'xio.script.subscribers event must be a string.',
           fatal: true
         });
       }
@@ -890,7 +914,30 @@ window.mt = (function () {
 
     };
 
-    xio.port = port;
+    /**
+     * API Wrappers
+     */
+    
+    /**
+     * PortWrapper presents an EventEmitter API for communicating to and from content scripts.
+     */
+    var PortWrapper = function ( port ) {
+      this.raw = port;
+    };
+
+    PortWrapper.fn = PortWrapper.prototype;
+
+    PortWrapper.fn.on = function () {};
+
+    if( this.isChrome() ) {
+      // Listen for connection event
+      chrome.extension.onConnect.addListener(function ( rawPort ) {
+        var xioPort = new PortWrapper( rawPort );
+        script.publish( 'connection', { port: xioPort } );
+      });
+    }
+
+    xio.script = script;
 
     // Ensure createPort isn't called again
     return function () {};
