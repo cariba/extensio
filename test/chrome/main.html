@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="uft-8">
+
+<script src="jquery.js"></script>
+<script src="extensio-with-minitest.js"></script>
+<script>
+
+$(function () {
+
+  /**
+   * extensio Chrome tests. mt.fin is called in the shared tests.
+   */
+  mt.test('xio#chrome', function () {
+
+    mt.ok(typeof xio === 'object', 'xio is an object.');
+    
+    mt.ok(xio.env === 1, 'xio detects chrome');
+    mt.ok(xio.contentScript === false, 'xio detects not in a content script');
+
+  });
+
+  /**
+   * Data URLs
+   */
+  mt.test('xio.data', function () {
+
+    mt.ok(typeof xio.data === 'function', 'xio.data is a function.');
+    
+    // chrome-extension://abcdefghijklmnop/images/kitten.jpg
+    var url = xio.data('res/example.txt');
+
+    var pattern = /^chrome-extension:\/{2,}[a-z]+\/res\/example.txt$/g;
+
+    mt.ok(url.match(pattern), 'returned url matches pattern');
+
+  });
+
+
+  /**
+   * Ports
+   */
+  mt.test('xio.port', function () {
+    mt.equal(typeof xio.port, 'object', 'is an object');
+  });
+
+  mt.test('xio.port.on', function () {
+    mt.equal(typeof xio.port.on, 'function', 'is a function');
+
+    // Basic port.on functionality
+    var token = xio.port.on('connection', function ( port ) {
+      mt.equal(typeof port, 'object', 'is an object');
+    });
+
+    mt.equal(typeof token, 'string', 'token is a string');
+
+    // Throws exceptions?
+    try {
+      xio.port.on({a: 123}, function ( port ) {});
+    } catch (e) {
+      mt.equal(e, 'xio : Event must be a string.');
+    }
+
+    try {
+      xio.port.on('someEvent', 'loadOfRubbish');
+    } catch (e) {
+      mt.equal(e, 'xio : port.on callback must be a function.');
+    }
+
+
+  });
+
+  mt.test('xio.port.emit', function () {
+    mt.equal(typeof xio.port.emit, 'function', 'is a function');
+  });
+
+  mt.fin();
+
+});
+
+</script>

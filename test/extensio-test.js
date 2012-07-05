@@ -153,4 +153,22 @@
 
   });
 
+  /**
+   * Ports
+   */
+  
+  module('extensio#ports');
+
+  test('xio.port', function () {
+    equal(typeof xio.port, 'object', 'is an object');
+  });
+
+  test('xio.port.on', function () {
+    equal(typeof xio.port.on, 'function', 'is a function');
+  });
+
+  test('xio.port.emit', function () {
+    equal(typeof xio.port.emit, 'function', 'is a function');
+  });
+
 }( jQuery ));

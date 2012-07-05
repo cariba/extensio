@@ -317,19 +317,11 @@ window.mt = (function () {
 (function ( global, $ ) {
 
   /**
-   * Check for jQuery
-   */
-  if( $ === undefined ) {
-    console.log( "xio requires jQuery." );
-    return false;
-  }
-
-  /**
    * Don't create two xios
    */
   if( global.xio ) {
     console.log( "xio found in global scope." );
-    return global.xio;
+    return;
   }
 
   /**
@@ -391,6 +383,11 @@ window.mt = (function () {
         });
       }
     }
+
+    /**
+     * Initialise the port object
+     */
+    this.createPort();
   };
 
   /**
@@ -406,6 +403,12 @@ window.mt = (function () {
   };
   Xio.prototype.isSafari = function () {
     return this.env === this.environments.safari;
+  };
+  Xio.prototype.isContentScript = function () {
+    return this.contentScript;
+  };
+  Xio.prototype.isDOMPresent = function () {
+    return typeof global.document !== "undefined";
   };
 
   /**=============================================================
@@ -476,6 +479,14 @@ window.mt = (function () {
    * Returns a DOM element.
    */
   Xio.prototype.build = function( ob ) {
+
+    // Don't run anything with using jQuery in a DOMless environment
+    if( this.isContentScript() && ! this.isDOMPresent() ) {
+      return this.error({
+        err: 'xio.build does not work in a non-content-script context.',
+        fatal: true
+      });
+    }
 
     // Ensure that ob is an array
     if( ! $.isArray( ob ) ) {
@@ -564,6 +575,14 @@ window.mt = (function () {
    * Returns the <style> element that was added to the <head> of the DOM
    */
   Xio.prototype.css = function( ob ) {
+
+    // Don't run anything with using jQuery in a DOMless environment
+    if( this.isContentScript() && ! this.isDOMPresent() ) {
+      return this.error({
+        err: 'xio.build does not work in a non-content-script context.',
+        fatal: true
+      });
+    }
 
     // Ensure that ob is an object
     if( typeof ob !== 'object' ) {
@@ -673,6 +692,14 @@ window.mt = (function () {
    */
   Xio.prototype.insert = function ( ob ) {
 
+    // Don't run anything with using jQuery in a DOMless environment
+    if( this.isContentScript() && ! this.isDOMPresent() ) {
+      return this.error({
+        err: 'xio.build does not work in a non-content-script context.',
+        fatal: true
+      });
+    }
+
     // Ensure that ob is an object
     if( typeof ob !== 'object' ) {
       return this.error({
@@ -753,6 +780,102 @@ window.mt = (function () {
     if( this.isSafari() ) {
       return (safari.extension.baseURI + resource);
     }
+  };
+
+  /**
+   * xio.port is a EventEmitter-style API for persistent communication between the
+   * background page and the content scripts.
+   *
+   * There are a few special events.
+   *   'connection' is run when there's a connection from a new tab or context.
+   *     This event passes the port object on which the connection was made (another EventEmitter).
+   *
+   * Example usage:
+   *   xio.port.on('connection', function ( port ) {
+   *     port.on('myEvent', function ( data ) {
+   *       // Do something interesting...
+   *     });
+   *   });
+   *
+   */
+  Xio.prototype.createPort = function () {
+
+    // Keep a reference to xio
+    var xio = this;
+
+    // The root port object
+    var port = {};
+
+    // Subscribers
+    var subID = 0;
+    var sub = {};
+
+    var special = {
+      connection: function () {}
+    };
+
+    /**
+     * Generate a token for event subscription.
+     *
+     * Multiply two large coprime integers (using the time)
+     */
+    var createToken = function ( event ) {
+      return event + Math.floor(Math.random() * Math.pow(10, 10));
+    };
+
+    /**
+     * port.on subscribes to events from all connected ports.
+     *
+     * As mentioned above, there are special events that pass in specific
+     * data that are designed to make the job of managing ports to many tabs
+     * simple and easy.
+     */
+    port.on = function ( event, cb ) {
+
+      // Ensure event is a string
+      if( typeof event !== 'string' ) {
+        xio.error({
+          err: 'Event must be a string.',
+          fatal: true
+        });
+      }
+
+      // Ensure cb is a function
+      if( typeof cb !== 'function' ) {
+        xio.error({
+          err: 'port.on callback must be a function.',
+          fatal: true
+        });
+      }
+
+      // Generate a token for this subscription
+      var token = createToken( event );
+
+      // Initialise the port object
+      if( ! sub[event] ) {
+        sub[event] = [];
+      }
+
+      // Store the subscription
+      sub[event].push({
+        token: token,
+        cb: cb
+      });
+
+      return token;
+
+    };
+
+    /**
+     * port.emit posts a message to all connected ports.
+     */
+    port.emit = function () {};
+
+    xio.port = port;
+
+    // Ensure createPort isn't called again
+    return function () {};
+
   };
 
   /**
