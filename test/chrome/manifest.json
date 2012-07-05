@@ -11,6 +11,7 @@
       "js": [
         "jquery.js",
         "extensio-with-minitest.js",
+        "extensio-with-minitest.js",
         "chrome-all-tests.js"
       ]
     }

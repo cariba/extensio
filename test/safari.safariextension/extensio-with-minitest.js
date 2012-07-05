@@ -1,4 +1,4 @@
-/*! extensio - v0.0.2 - 2012-07-04
+/*! extensio - v0.0.2 - 2012-07-05
 * Copyright (c) 2012 Tom Ashworth; MIT License */
 
 /**
@@ -310,57 +310,79 @@ window.mt = (function () {
  *
  *
  * TODO:
- *   Find a way to only run Ch/FF/Sa code when we are in that evironment, and make the api
- *   accessible from an xio api
- *   Extension generator from the command line (xio init)
- *   Browser UI stuff
+ *   Add extension side code & tests.
+ *     In Firefox this will be a CommonJS module (how to do testing?)
  */
 
-var xio;
-window.xio = xio = (function ( $ ) {
+(function ( global, $ ) {
 
   /**
    * Check for jQuery
    */
   if( $ === undefined ) {
-    return console.log( "xio requires jQuery." );
+    console.log( "xio requires jQuery." );
+    return false;
   }
 
   /**
-   * Information & constants
+   * Don't create two xios
    */
-  var global = {
-    id: 'xio',
-    env: {
-      chrome: 1,
-      firefox: 2,
-      safari: 3
-    }
-  };
+  if( global.xio ) {
+    console.log( "xio found in global scope." );
+    return global.xio;
+  }
 
   /**
    * Initialise xio (automatic)
    */
   var Xio = function () {
+    /**
+     * Information & constants
+     */
+    this.id = 'xio';
+    this.environments = {
+      chrome: 1,
+      firefox: 2,
+      safari: 3
+    };
+
     // Directly log errors?
     this.logging = true;
 
     // Detect the current environment & extend Xio using the
     // appropriate environment code
     this.env = 0;
-    this.env_name = '';
+    this.envName = '';
+    this.contentScript = true;
+    // Chrome
     if( window.chrome ) {
-      this.env = global.env.chrome;
-      this.env_name = 'chrome';
+      this.env = this.environments.chrome;
+      this.envName = 'chrome';
+      // Are we in a content script?
+      if( window.chrome.permissions ) {
+        this.contentScript = false;
+      }
     }
+    // Safari
     else if( window.safari ) {
-      this.env = global.env.safari;
-      this.env_name = 'safari';
+      this.env = this.environments.safari;
+      this.envName = 'safari';
+      // Content script?
+      if( window.safari.settings ) {
+        this.contentScript = false;
+      }
     }
-    else if( window.self && window.self.port ) {
-      this.env = global.env.firefox;
-      this.env_name = 'firefox';
-    } else {
+    // Firefox
+    else if( window.self && (window.self.port || window.self.id) ) {
+      this.env = this.environments.firefox;
+      this.envName = 'firefox';
+      // Content script
+      if( window.self.id ) {
+        this.contentScript = false;
+      }
+    }
+    // Other (error!)
+    else {
       // Only throw a fatal error if we're in an extension
       if( window.xio_development !== true ) {
         this.error({
@@ -377,13 +399,13 @@ window.xio = xio = (function ( $ ) {
    * Returns true or false
    */
   Xio.prototype.isChrome = function () {
-    return this.env === global.env.chrome;
+    return this.env === this.environments.chrome;
   };
   Xio.prototype.isFirefox = function () {
-    return this.env === global.env.firefox;
+    return this.env === this.environments.firefox;
   };
   Xio.prototype.isSafari = function () {
-    return this.env === global.env.safari;
+    return this.env === this.environments.safari;
   };
 
   /**=============================================================
@@ -417,7 +439,7 @@ window.xio = xio = (function ( $ ) {
     if( typeof ob === 'string' ) { ob = {err: [ob], fatal: false}; }
     if( ! $.isArray( ob.err ) ) { ob.err = [ob.err]; }
     // Build the error array
-    var error = [ global.id, ':' ].concat( ob.err );
+    var error = [ this.id, ':' ].concat( ob.err );
     // Throw an exception on fatal errors,
     // otherwise log the error and return it
     if( ob.fatal ) { throw error.join( ' ' ); }
@@ -703,41 +725,39 @@ window.xio = xio = (function ( $ ) {
    =============================================================**/
 
   /**
-     * xio.data returns a fully-qualified URL for a string resource relative to the root extension directory.
-     *
-     * Example usage:
-     *   xio.data('image/kitten.jpg'); // chrome-extension://abcdefghijklmnop/images/kitten.jpg
-     *
-     * Returns a string URL for the specified resource.
-     */
-    Xio.prototype.data = function( resource ) {
-      if( typeof resource !== 'string' ) {
-        return this.error({
-          err: 'Resource must be a string.'
-        });
-      }
-      // Pass the request on to Chrome's method
-      if( this.isChrome() ) {
-        return chrome.extension.getURL( resource );
-      }
-      // Firefox does not support this method
-      if( this.isFirefox() ) {
-        this.error({
-          err: 'xio.data is not currently available in Firefox. Support is coming.',
-          fatal: true
-        });
-      }
-      // Build a URL for Safari
-      if( this.isSafari() ) {
-        return (safari.extension.baseURI + resource);
-      }
-    };
+   * xio.data returns a fully-qualified URL for a string resource relative to the root extension directory.
+   *
+   * Example usage:
+   *   xio.data('image/kitten.jpg'); // chrome-extension://abcdefghijklmnop/images/kitten.jpg
+   *
+   * Returns a string URL for the specified resource.
+   */
+  Xio.prototype.data = function( resource ) {
+    if( typeof resource !== 'string' ) {
+      return this.error({
+        err: 'Resource must be a string.'
+      });
+    }
+    // Pass the request on to Chrome's method
+    if( this.isChrome() ) {
+      return chrome.extension.getURL( resource );
+    }
+    // Firefox does not support this method
+    if( this.isFirefox() ) {
+      this.error({
+        err: 'xio.data is not currently available in Firefox. Support is coming.',
+        fatal: true
+      });
+    }
+    // Build a URL for Safari
+    if( this.isSafari() ) {
+      return (safari.extension.baseURI + resource);
+    }
+  };
 
   /**
    * Kick things off!
    */
-  var xio = new Xio();
+  global.xio = new Xio();
 
-  return xio;
-
-}( jQuery ));
+}( this, jQuery ));
