@@ -1,7 +1,7 @@
 {
   "name": "extensio",
   "version": "0",
-  "background_page": "main.html",
+  "background_page": "test-bg-page.html",
   "permissions": [
     "tabs", "http://*/*"
   ],
@@ -9,10 +9,10 @@
     {
       "matches": ["http://localhost/*"],
       "js": [
-        "jquery.js",
-        "jasmine-and-console-reporter.js",
-        "extensio.js",
-        "chrome-all-tests.js"
+        "libs/jquery.js",
+        "libs/jasmine-and-console-reporter.js",
+        "libs/extensio.js",
+        "test/chrome-all-tests.js"
       ]
     }
   ]

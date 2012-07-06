@@ -34,14 +34,14 @@ module.exports = function(grunt) {
           '<banner:meta.banner>',
           'src/<%= pkg.name %>.js'
         ],
-        dest: 'test/chrome/<%= pkg.name %>.js'
+        dest: 'test/chrome/libs/<%= pkg.name %>.js'
       },
       chrometest: {
         src: [
-          'test/chrome/chrome-content-script-test.js',
+          'test/chrome/test-content-script.js',
           'test/shared/shared-content-script-test.js'
         ],
-        dest: 'test/chrome/chrome-all-tests.js'
+        dest: 'test/chrome/test/chrome-all-tests.js'
       },
       firefox: {
         src: [

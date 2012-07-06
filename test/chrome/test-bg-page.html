@@ -1,9 +1,9 @@
 <!doctype html>
 <meta charset="uft-8">
 
-<script src="jquery.js"></script>
-<script src="jasmine-and-console-reporter.js"></script>
-<script src="extensio.js"></script>
+<script src="libs/jquery.js"></script>
+<script src="libs/jasmine-and-console-reporter.js"></script>
+<script src="libs/extensio.js"></script>
 <script>
 
 $(function () {
@@ -69,6 +69,31 @@ $(function () {
       expect(function () {
         xio.script.on('someEvent', 'loadOfRubbish');
       }).toThrow();
+
+    });
+
+    it('gets message from content script', function () {
+
+      var recieved, portdata;
+      runs(function () {
+        
+        recieved = false;
+
+        xio.script.on('connection', function ( data ) {
+          console.log(data);
+          portdata = data;
+          recieved = true;
+        });
+
+      });
+
+      waitsFor(function () {
+        return recieved;
+      }, 'Recieved should be true', 1000 * 2);
+
+      runs(function () {
+        expect(portdata).toBeTruthy();
+      });
 
     });
 

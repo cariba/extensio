@@ -626,6 +626,7 @@
       // Listen for connection event
       chrome.extension.onConnect.addListener(function ( rawPort ) {
         var xioPort = new PortWrapper( rawPort );
+        console.log("Connection", rawPort, xioPort);
         script.publish( 'connection', { port: xioPort } );
       });
     }
