@@ -2,92 +2,117 @@
 <meta charset="uft-8">
 
 <script src="jquery.js"></script>
-<script src="extensio-with-minitest.js"></script>
+<script src="jasmine-and-console-reporter.js"></script>
+<script src="extensio.js"></script>
 <script>
 
 $(function () {
 
-  /**
-   * extensio Chrome tests. mt.fin is called in the shared tests.
-   */
-  mt.test('xio#chrome', function () {
+  // Set up Jasmine with the ConsoleReporter
 
-    mt.ok(typeof xio === 'object', 'xio is an object.');
-    
-    mt.ok(xio.env === 1, 'xio detects chrome');
-    mt.ok(xio.contentScript === false, 'xio detects not in a content script');
+  describe('xio#chrome', function () {
+
+    it('is an object', function () {
+      expect(xio).toBeDefined();
+    });
+
+    it('detects Chrome', function () {
+      expect(xio.env).toEqual(1);
+    });
+
+    it('detects background page', function () {
+      expect(xio.contentScript).toBe(false);
+    });
 
   });
 
-  /**
-   * Data URLs
-   */
-  mt.test('xio.data', function () {
+  describe('xio.data', function () {
 
-    mt.ok(typeof xio.data === 'function', 'xio.data is a function.');
-    
-    // chrome-extension://abcdefghijklmnop/images/kitten.jpg
+    it('is a function', function () {
+      expect(xio.data).toBeDefined();
+      expect(typeof xio.data).toBe('function');
+    });
+
     var url = xio.data('res/example.txt');
-
     var pattern = /^chrome-extension:\/{2,}[a-z]+\/res\/example.txt$/g;
 
-    mt.ok(url.match(pattern), 'returned url matches pattern');
+    it('retrieves correct data URLs', function () {
+      expect(url.match(pattern)).toBeTruthy();
+    });
 
   });
 
+  describe('xio.script', function () {
 
-  /**
-   * Ports
-   */
-  
-  var connectionFired = false;
-
-  mt.test('xio.script', function () {
-    mt.equal(typeof xio.script, 'object', 'is an object');
-  });
-
-  mt.test('xio.script.on', function () {
-    mt.equal(typeof xio.script.on, 'function', 'is a function');
-
-    var testCallback = function ( port ) {
-      mt.equal(typeof port, 'object', 'is an object');
-      connectionFired = true;
-    };
-
-    // Basic port.on functionality
-    var token = xio.script.on('connection', testCallback);
-
-    mt.equal(typeof token, 'string', 'token is a string');
-
-    mt.equal(xio.script.subscribers('connection').length, 1, 'xio.script.subscribers returns the correct length array of subscribers');
-
-    mt.equal(xio.script.subscribers('connection')[0].token, token, 'xio.script.subscribers returns the correct token');
-    mt.equal(xio.script.subscribers('connection')[0].cb, testCallback, 'xio.script.subscribers returns the callback');
-
-    // Throws exceptions?
-    try {
-      xio.script.on({a: 123}, function ( port ) {});
-    } catch (e) {
-      mt.equal(e, 'xio : script.on event must be a string.', 'returns correct error message with object event');
-    }
-
-    try {
-      xio.script.on('someEvent', 'loadOfRubbish');
-    } catch (e) {
-      mt.equal(e, 'xio : script.on callback must be a function.', 'return correct error message with string callback');
-    }
+    it('is an object', function () {
+      expect(xio.script).toBeDefined();
+      expect(xio.script).toBeTruthy();
+    });
 
   });
 
-  mt.test('xio.script.publish', function () {
+  describe('xio.script.on', function () {
 
-    xio.script.publish( 'connection', {} );
+    it('is a function', function () {
 
-    mt.ok(connectionFired, 'connection was made');
+      expect(xio.script.on).toBeDefined();
+      expect(xio.script.on).toBeTruthy();
+
+    });
+
+    it('throws errors', function () {
+
+      expect(function () {
+        xio.script.on({a: 123}, function ( port ) {});
+      }).toThrow();
+
+      expect(function () {
+        xio.script.on('someEvent', 'loadOfRubbish');
+      }).toThrow();
+
+    });
+
+    describe('xio.script tokens', function () {
+
+      var testCallback = function () {};
+      var token = xio.script.on('connection', testCallback);
+
+      it('returns a string token', function () {
+        expect(token).toBeTruthy();
+        expect(typeof token).toBe('string');
+      });
+
+      it('builds a list of subscribers', function () {
+        var subscribers = xio.script.subscribers('connection');
+        expect(subscribers.length).toBeGreaterThan(0);
+        expect(subscribers[0].token).toEqual(token);
+        expect(subscribers[0].cb).toEqual(testCallback);
+      });
+
+    });
+
+    describe('xio.script.publish', function () {
+
+      var eventFired = false;
+      var testCallback = function () {
+        eventFired = true;
+      };
+      var token = xio.script.on('connection', testCallback);
+
+      it('fires event', function () {
+        xio.script.publish('connection');
+        expect(eventFired).toEqual(true);
+      });
+
+    });
 
   });
 
-  mt.fin();
+  // Get moving
+  jasmine.getEnv().addReporter(new jasmine.ConsoleReporter(function () {
+    console.log.apply( console, arguments );
+  }));
+  jasmine.getEnv().execute();
 
 });
 

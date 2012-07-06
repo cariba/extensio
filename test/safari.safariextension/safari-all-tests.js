@@ -3,30 +3,41 @@ $(function () {
   /**
    * extensio Chrome tests. mt.fin is called in the shared tests.
    */
-  mt.test('xio#safari', function () {
+  describe('xio#safari', function () {
 
-    mt.ok(typeof xio === 'object', 'xio is an object.');
+    it('is an object', function () {
+      expect(xio).toBeDefined();
+      expect(xio).toBeTruthy();
+    });
     
-    mt.ok(xio.env === 3, 'xio detects safari');
+    it('detects safari', function () {
+      expect(xio.env).toEqual(3);
+      expect(xio.contentScript).toEqual(true);
+    });
 
   });
 
   /**
    * Data URLs
    */
-  mt.test('xio.data', function () {
+  describe('xio.data', function () {
 
-    mt.ok(typeof xio.data === 'function', 'xio.data is a function.');
-    
+    it('is a function', function () {
+      expect(xio.data).toBeDefined();
+      expect(typeof xio.data).toBe('function');
+    });
+
     var url = xio.data('res/example.txt');
-
-    //safari-extension://com.extensio.safari-9G9SEE48D7/62e3b2af/res/example.txt
-
     var pattern = /^safari-extension:\/{2,}[a-zA-Z0-9\.-]+\/[a-z0-9]+\/res\/example.txt$/g;
 
-    mt.ok(url.match(pattern), 'returned url matches pattern');
+    it('retrieves correct data URLs', function () {
+      expect(url.match(pattern)).toBeTruthy();
+    });
 
   });
+
+  var port = chrome.extension.connect({name: "test-port"});
+  port.postMessage({example: "something 1234"});
 
 });
 $(function () {
@@ -34,7 +45,7 @@ $(function () {
   /**
    * DOM element building
    */
-  mt.test('xio.build', function () {
+  describe('xio.build', function () {
 
     xio.logging = false;
 
@@ -45,8 +56,10 @@ $(function () {
         ['strong', { text: 'I am strong!' }],
         'Testing'
       ];
-    //var newElem = xio.build(domarray);
-    //mt.equal($(newElem).text(), 'HelloI am strong!Testing', 'correctly builds DOM elements');
+    var newElem = xio.build(domarray);
+    it('correctly builds DOM elements', function () {
+      expect($(newElem).text()).toEqual('HelloI am strong!Testing');
+    });
     
     // Try some nonsense
     var crap =
@@ -55,8 +68,10 @@ $(function () {
         ['strong', [ 'text', 'I am strong!' ] ]
       ];
     var crapElem = xio.build(crap);
-    mt.equal($(crapElem).text(), '', 'reasonable crap still works');
 
+    it('does not blow up with reasonable crap', function () {
+      expect($(crapElem).text()).toEqual('');
+    });
 
     // Try some nonsense
     var result;
@@ -65,11 +80,12 @@ $(function () {
         ['a',  'test'],
         ['strong', [ 'text', 'I am strong!' ] ]
       ];
-    try {
-      result = xio.build(crap);
-    } catch (e) {
-      mt.equal(e, 'xio : The first element of the DOM array must be a string.', 'absolute crap throws error.');
-    }
+
+    it('does blows up with unreasonable crap', function () {
+      expect(function() {
+        xio.build(crap);
+      }).toThrow();
+    });
     
     xio.logging = true;
 
@@ -78,7 +94,7 @@ $(function () {
   /**
    * CSS insertion
    */
-  mt.test('xio.css', function () {
+  describe('xio.css', function () {
     var elem = $('.test-elem');
     var style = xio.css({
       a: {
@@ -89,16 +105,20 @@ $(function () {
         'background-color': 'rgb(0, 0, 0)'
       }
     });
-    mt.equal($('.test-link').css('color'), 'rgb(0, 255, 0)', 'correctly styles using keys');
-    mt.equal($('a', elem).css('color'), 'rgb(255, 0, 0)', 'correctly styles using string selectors');
-    mt.equal($('a', elem).css('background-color'), 'rgb(0, 0, 0)', 'correctly handles multiple rules');
+    it('inserts CSS correctly', function () {
+      expect($('.test-link').css('color')).toEqual('rgb(0, 255, 0)');
+      expect($('a', elem).css('color')).toEqual('rgb(255, 0, 0)');
+      expect($('a', elem).css('background-color')).toEqual('rgb(0, 0, 0)');
+    });
   });
 
   /**
    * DOM insertion
    */
-  mt.test('xio.insert', function () {
-    mt.equal(typeof xio.insert, 'function', 'is a function');
+  describe('xio.insert', function () {
+    it('is a function', function () {
+      expect(typeof xio.insert).toEqual('function');
+    });
 
     var count = 0;
 
@@ -117,15 +137,19 @@ $(function () {
     var test = $('.inserted-wrapper');
 
     // Was is inserted, and was it inserted correctly?
-    mt.equal(inserted !== undefined, true, 'returns something');
-    mt.equal(test.length > 0, true, 'inserts elements');
-    mt.equal($('.test-container').text(), 'Test.Test2.Hello!', 'appends element');
-    mt.equal($('a', test).hasClass('inserted-a'), true, 'inserts children');
-    mt.equal($('a', test).text(), 'Hello!', 'inserts text');
+    it('inserts elements correctly', function () {
+      expect(inserted !== undefined).toEqual(true);
+      expect(test.length > 0).toEqual(true);
+      expect($('.test-container').text()).toEqual('Test.Test2.Hello!');
+      expect($('a', test).hasClass('inserted-a')).toEqual(true);
+      expect($('a', test).text()).toEqual('Hello!');
+    });
 
     // Test for event handler registration
     $('a', test).click();
-    mt.equal(count, 1, 'attaches even handlers');
+    it('attaches event handlers', function () {
+      expect(count).toEqual(1);
+    });
 
     // Test different kinds of insertion (after, before, prepend)
     var inserted_after = xio.insert({
@@ -135,7 +159,9 @@ $(function () {
       build: domarray
     });
 
-    mt.equal($('.test-container-after').text(), 'Test.Hello!Test2.', 'appends element after');
+    it('adds elements `after` correctly', function () {
+      expect($('.test-container-after').text()).toEqual('Test.Hello!Test2.');
+    });
 
     var inserted_before = xio.insert({
       id: 'test',
@@ -144,7 +170,9 @@ $(function () {
       build: domarray
     });
 
-    mt.equal($('.test-container-before').text(), 'Hello!Test.Hello!Test2.', 'appends element before');
+    it('adds elements `before` correctly', function () {
+      expect($('.test-container-before').text()).toEqual('Hello!Test.Hello!Test2.');
+    });
 
     var inserted_prepend = xio.insert({
       id: 'test',
@@ -153,10 +181,16 @@ $(function () {
       build: domarray
     });
 
-    mt.equal($('.test-container-prepend').text(), 'Hello!Test.Test2.', 'prepends element');
+    it('prepends elements correctly', function () {
+      expect($('.test-container-prepend').text()).toEqual('Hello!Test.Test2.');
+    });
 
   });
 
-  mt.fin();
+  // Get moving
+  jasmine.getEnv().addReporter(new jasmine.ConsoleReporter(function () {
+    console.log.apply( console, arguments );
+  }));
+  jasmine.getEnv().execute();
 
 });

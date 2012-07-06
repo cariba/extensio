@@ -3,27 +3,36 @@ $(function () {
   /**
    * extensio Chrome tests. mt.fin is called in the shared tests.
    */
-  mt.test('xio#chrome', function () {
+  describe('xio#chrome', function () {
 
-    mt.ok(typeof xio === 'object', 'xio is an object.');
+    it('is an object', function () {
+      expect(xio).toBeDefined();
+      expect(xio).toBeTruthy();
+    });
     
-    mt.ok(xio.env === 1, 'xio detects chrome');
+    it('detects chrome', function () {
+      expect(xio.env).toEqual(1);
+      expect(xio.contentScript).toEqual(true);
+    });
 
   });
 
   /**
    * Data URLs
    */
-  mt.test('xio.data', function () {
+  describe('xio.data', function () {
 
-    mt.ok(typeof xio.data === 'function', 'xio.data is a function.');
-    
-    // chrome-extension://abcdefghijklmnop/images/kitten.jpg
-    var url = xio.data('res/kitten.jpg');
+    it('is a function', function () {
+      expect(xio.data).toBeDefined();
+      expect(typeof xio.data).toBe('function');
+    });
 
-    var pattern = /^chrome-extension:\/{2,}[a-z]+\/res\/kitten.jpg$/g;
+    var url = xio.data('res/example.txt');
+    var pattern = /^chrome-extension:\/{2,}[a-z]+\/res\/example.txt$/g;
 
-    mt.ok(url.match(pattern), 'returned url matches pattern');
+    it('retrieves correct data URLs', function () {
+      expect(url.match(pattern)).toBeTruthy();
+    });
 
   });
 

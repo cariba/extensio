@@ -3,29 +3,40 @@ $(function () {
   /**
    * extensio Chrome tests. mt.fin is called in the shared tests.
    */
-  mt.test('xio#safari', function () {
+  describe('xio#safari', function () {
 
-    mt.ok(typeof xio === 'object', 'xio is an object.');
+    it('is an object', function () {
+      expect(xio).toBeDefined();
+      expect(xio).toBeTruthy();
+    });
     
-    mt.ok(xio.env === 3, 'xio detects safari');
+    it('detects safari', function () {
+      expect(xio.env).toEqual(3);
+      expect(xio.contentScript).toEqual(true);
+    });
 
   });
 
   /**
    * Data URLs
    */
-  mt.test('xio.data', function () {
+  describe('xio.data', function () {
 
-    mt.ok(typeof xio.data === 'function', 'xio.data is a function.');
-    
+    it('is a function', function () {
+      expect(xio.data).toBeDefined();
+      expect(typeof xio.data).toBe('function');
+    });
+
     var url = xio.data('res/example.txt');
-
-    //safari-extension://com.extensio.safari-9G9SEE48D7/62e3b2af/res/example.txt
-
     var pattern = /^safari-extension:\/{2,}[a-zA-Z0-9\.-]+\/[a-z0-9]+\/res\/example.txt$/g;
 
-    mt.ok(url.match(pattern), 'returned url matches pattern');
+    it('retrieves correct data URLs', function () {
+      expect(url.match(pattern)).toBeTruthy();
+    });
 
   });
+
+  var port = chrome.extension.connect({name: "test-port"});
+  port.postMessage({example: "something 1234"});
 
 });

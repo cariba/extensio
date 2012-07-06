@@ -1,4 +1,4 @@
-/*! extensio - v0.0.2 - 2012-07-05
+/*! extensio - v0.0.2 - 2012-07-06
 * Copyright (c) 2012 Tom Ashworth; MIT License */
 
 /**
@@ -6,7 +6,7 @@
  *
  * It does not:
  *   - do asynchronous tests
- *   - non-strict equality
+ *   - do non-strict equality
  *   - give you nicely styled output
  *   - tell you you're good looking
  *
@@ -23,6 +23,7 @@ window.mt = (function () {
    */
   var Minitest = function () {
 
+    this.done = false;
     this.total = 0;
     this.assertions = 0;
     this.passed = 0;
@@ -295,6 +296,10 @@ window.mt = (function () {
    * Returns nada.
    */
   Minitest.fn.fin = function () {
+    if( this.done === true ) {
+      return;
+    }
+    this.done = true;
     var elapsed = ((new Date()).getTime() - this.start);
     this.log( this.msgs.fin, elapsed + 'ms' );
     this.log( this.msgs.test, this.total );
@@ -314,7 +319,7 @@ window.mt = (function () {
  *     In Firefox this will be a CommonJS module (how to do testing?)
  */
 
-(function ( global, $ ) {
+(function ( global, $, undefined ) {
 
   /**
    * Don't create two xios
@@ -815,7 +820,7 @@ window.mt = (function () {
      * Multiply two large coprime integers (using the time)
      */
     var createToken = function ( event ) {
-      return event + Math.floor(Math.random() * Math.pow(10, 10));
+      return event + Math.floor((new Date()).getTime() % (Math.random() * Math.pow(10, 10)));
     };
 
     /**

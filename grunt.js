@@ -32,10 +32,9 @@ module.exports = function(grunt) {
       chrome: {
         src: [
           '<banner:meta.banner>',
-          'libs/minitest.js',
           'src/<%= pkg.name %>.js'
         ],
-        dest: 'test/chrome/<%= pkg.name %>-with-minitest.js'
+        dest: 'test/chrome/<%= pkg.name %>.js'
       },
       chrometest: {
         src: [
@@ -47,10 +46,9 @@ module.exports = function(grunt) {
       firefox: {
         src: [
           '<banner:meta.banner>',
-          'libs/minitest.js',
           'src/<%= pkg.name %>.js'
         ],
-        dest: 'test/firefox/data/<%= pkg.name %>-with-minitest.js'
+        dest: 'test/firefox/data/<%= pkg.name %>.js'
       },
       firefoxtest: {
         src: [
@@ -62,10 +60,9 @@ module.exports = function(grunt) {
       safari: {
         src: [
           '<banner:meta.banner>',
-          'libs/minitest.js',
           'src/<%= pkg.name %>.js'
         ],
-        dest: 'test/safari.safariextension/<%= pkg.name %>-with-minitest.js'
+        dest: 'test/safari.safariextension/<%= pkg.name %>.js'
       },
       safaritest: {
         src: [

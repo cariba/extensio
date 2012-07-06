@@ -7,7 +7,7 @@
  *     In Firefox this will be a CommonJS module (how to do testing?)
  */
 
-(function ( global, $ ) {
+(function ( global, $, undefined ) {
 
   /**
    * Don't create two xios
@@ -508,7 +508,7 @@
      * Multiply two large coprime integers (using the time)
      */
     var createToken = function ( event ) {
-      return event + Math.floor(Math.random() * Math.pow(10, 10));
+      return event + Math.floor((new Date()).getTime() % (Math.random() * Math.pow(10, 10)));
     };
 
     /**

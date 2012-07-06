@@ -10,7 +10,8 @@
       "matches": ["http://localhost/*"],
       "js": [
         "jquery.js",
-        "extensio-with-minitest.js",
+        "jasmine-and-console-reporter.js",
+        "extensio.js",
         "chrome-all-tests.js"
       ]
     }
